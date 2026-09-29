@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mobile_aloha">
+  <!-- Full Mobile ALOHA (Tracer2 + 4 Piper arms + 4 D435s).
+       Source kinematics: aloha_tracer2_four_d435_dark.urdf
+       Older assembler with a space in the filename: "aloha_tracer2 copy.xacro" -->
+  <xacro:include filename="$(find aloha_new_description)/urdf/_aloha_tracer2_four_d435_dark_body.xacro"/>
+
+  <xacro:macro name="aloha_arm_joint" params="name jmin jmax">
+    <joint name="${name}">
+      <command_interface name="position">
+        <param name="min">${jmin}</param>
+        <param name="max">${jmax}</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="aloha_arm_hw" params="prefix">
+    <xacro:aloha_arm_joint name="${prefix}_joint1" jmin="-2.618" jmax="2.618"/>
+    <xacro:aloha_arm_joint name="${prefix}_joint2" jmin="0.0" jmax="3.14"/>
+    <xacro:aloha_arm_joint name="${prefix}_joint3" jmin="-2.697" jmax="0.0"/>
+    <xacro:aloha_arm_joint name="${prefix}_joint4" jmin="-1.832" jmax="1.832"/>
+    <xacro:aloha_arm_joint name="${prefix}_joint5" jmin="-1.22" jmax="1.22"/>
+    <xacro:aloha_arm_joint name="${prefix}_joint6" jmin="-3.14" jmax="3.14"/>
+    <xacro:aloha_arm_joint name="${prefix}_joint7" jmin="0.0" jmax="0.04"/>
+    <xacro:aloha_arm_joint name="${prefix}_joint8" jmin="-0.04" jmax="0.0"/>
+  </xacro:macro>
+
+  <xacro:macro name="gz_camera" params="link topic type:=camera">
+    <gazebo reference="${link}">
+      <sensor name="${link}_sensor" type="${type}">
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+        <update_rate>10</update_rate>
+        <topic>${topic}</topic>
+        <gz_frame_id>${link}</gz_frame_id>
+        <camera name="${link}_camera">
+          <horizontal_fov>1.5009831567151235</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>12.0</far>
+          </clip>
+        </camera>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <!-- D435 RGB cameras (Harmonic sensor tags; no Gazebo Classic camera plugins).
+       mid_l is RGB-D so Nav2 can fake a 2D lidar from depth. Wrist cameras stay RGB. -->
+  <xacro:gz_camera link="mid_l_camera_link" topic="/model/mobile_aloha/mid_l_camera" type="rgbd_camera"/>
+  <xacro:gz_camera link="mid_r_camera_link" topic="/model/mobile_aloha/mid_r_camera"/>
+  <xacro:gz_camera link="fl_camera_link" topic="/model/mobile_aloha/fl_camera"/>
+  <xacro:gz_camera link="fr_camera_link" topic="/model/mobile_aloha/fr_camera"/>
+
+  <gazebo reference="left_Link">
+    <mu1>1.4</mu1>
+    <mu2>1.4</mu2>
+  </gazebo>
+  <gazebo reference="right_link">
+    <mu1>1.4</mu1>
+    <mu2>1.4</mu2>
+  </gazebo>
+  <gazebo reference="left_front_link">
+    <mu1>0.05</mu1>
+    <mu2>0.05</mu2>
+  </gazebo>
+  <gazebo reference="right_front_link">
+    <mu1>0.05</mu1>
+    <mu2>0.05</mu2>
+  </gazebo>
+  <gazebo reference="left_rear_link">
+    <mu1>0.05</mu1>
+    <mu2>0.05</mu2>
+  </gazebo>
+  <gazebo reference="right_rear_link">
+    <mu1>0.05</mu1>
+    <mu2>0.05</mu2>
+  </gazebo>
+
+  <gazebo>
+    <self_collide>false</self_collide>
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>left_joint</left_joint>
+      <right_joint>right_joint</right_joint>
+      <wheel_separation>0.5074</wheel_separation>
+      <wheel_radius>0.0825</wheel_radius>
+      <topic>/model/mobile_aloha/cmd_vel</topic>
+      <odom_topic>/model/mobile_aloha/odom</odom_topic>
+      <tf_topic>/model/mobile_aloha/tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>footprint</child_frame_id>
+      <odom_publish_frequency>50</odom_publish_frequency>
+      <max_linear_acceleration>1.0</max_linear_acceleration>
+      <min_linear_acceleration>-1.0</min_linear_acceleration>
+      <max_angular_acceleration>2.0</max_angular_acceleration>
+      <min_angular_acceleration>-2.0</min_angular_acceleration>
+    </plugin>
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+      <topic>/model/mobile_aloha/joint_state</topic>
+    </plugin>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <ros>
+        <namespace>/mobile_aloha</namespace>
+      </ros>
+      <parameters>$(find factorymate_gazebo)/config/mobile_aloha_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+  <ros2_control name="MobileAlohaArmSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <xacro:aloha_arm_hw prefix="fl"/>
+    <xacro:aloha_arm_hw prefix="fr"/>
+    <xacro:aloha_arm_hw prefix="bl"/>
+    <xacro:aloha_arm_hw prefix="br"/>
+    <xacro:aloha_arm_joint name="mid_camera_stand_joint" jmin="0.0" jmax="0.5"/>
+  </ros2_control>
+</robot>
