@@ -1,8 +1,45 @@
-# FactoryMate — ROS 2 Jazzy + Gazebo Harmonic Dynamic Warehouse
+# FactoryMate
 
-This project is a **Gazebo Harmonic** / **ROS 2 Jazzy** simulation of the upstream dynamic logistics warehouse with the **Mobile ALOHA** robot. Generic primitive FactoryMate warehouse worlds, placeholder URDFs, and Isaac Sim backends are not included.
+FactoryMate is a **ROS 2 Jazzy + Gazebo Harmonic warehouse simulation environment** for mobile robotics research and experimentation.
+
+It provides a dynamic warehouse scene with the **Mobile ALOHA mobile manipulator**, human actors, ROS 2 interfaces, perception sensors, navigation support, and basic manipulation utilities. The goal is to give students, researchers, and robotics developers a reusable simulation starting point without building the warehouse, robot model, ROS-Gazebo bridge, and navigation setup from scratch.
 
 The default world is `dynamic_logistics_warehouse_harmonic.sdf`. The robot models live under `ros2_ws/src/mobile_aloha_sim/`.
+
+## Features
+
+- Dynamic warehouse environment in Gazebo Harmonic
+- Mobile ALOHA mobile manipulator
+- ROS 2 Jazzy integration and ROS-Gazebo bridge configuration
+- Human and worker actors
+- Mobile robot odometry, TF, and robot state publishing
+- RGB-D and depth sensing, with LaserScan generation
+- Nav2 configuration and navigation support
+- Basic arm and gripper control, with pick-and-place utilities
+- RViz visualization
+- Reusable launch and validation scripts
+
+## Intended Uses
+
+FactoryMate can serve as a starting point for:
+
+- Autonomous and human-aware navigation
+- Nav2 experiments and multi-robot research
+- Reinforcement learning and safe RL
+- ORCA / RVO navigation and Control Barrier Functions
+- Computer vision and object detection
+- Manipulation research and task planning
+- Robotics education
+
+FactoryMate is intended primarily as a **simulation and research platform**, not a production-ready industrial robot system.
+
+## Why FactoryMate?
+
+Robotics projects often require substantial setup before experiments can begin. FactoryMate brings the core pieces together:
+
+**Warehouse + Robot + Humans + Sensors + ROS 2 + Gazebo + Navigation support**
+
+so researchers can focus on developing and testing their own robotics algorithms.
 
 ## Demonstration
 
@@ -37,13 +74,15 @@ colcon
 
 Typical ROS packages are available from the ROS 2 Jazzy apt repository. The launcher checks dependencies and exits with an actionable message if one is missing.
 
-## Run the Harmonic warehouse with Mobile ALOHA
+## Quick Start
 
 From the project root:
 
 ```bash
 ./scripts/run_factorymate_gazebo.sh
 ```
+
+This launches the warehouse, Mobile ALOHA robot, ROS 2 bridge, sensors, and visualization components. Extend the environment with your own navigation, perception, manipulation, reinforcement-learning, or safety algorithms.
 
 Headless server mode:
 
