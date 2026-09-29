@@ -8,7 +8,7 @@ The default world is `dynamic_logistics_warehouse_harmonic.sdf`. The robot model
 
 ![Mobile ALOHA robot](ros2_ws/src/mobile_aloha_sim/img/img.png)
 
-<video src="https://raw.githubusercontent.com/NikhileshRSahu/FactoryMate/main/assest/WhatsApp%20Video%202026-09-28%20at%2022.59.01.mp4" controls width="720"></video>
+<video src="https://raw.githubusercontent.com/NikhileshRSahu/FactoryMate/main/assest/mobile_aloha_warehouse_demo.mp4" controls width="720"></video>
 
 ## What is included
 
