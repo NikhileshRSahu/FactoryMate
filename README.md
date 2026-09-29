@@ -6,6 +6,8 @@ The default world is `dynamic_logistics_warehouse_harmonic.sdf`. The robot model
 
 ## Demonstration
 
+![Mobile ALOHA robot](ros2_ws/src/mobile_aloha_sim/img/img.png)
+
 [Watch the Mobile ALOHA warehouse demo](assest/WhatsApp%20Video%202026-09-28%20at%2022.59.01.mp4) (MP4).
 
 ## What is included
